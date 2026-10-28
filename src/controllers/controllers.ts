@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AppError } from "../domain/errors";
-import { VisitorInput } from "../domain/types";
+import { SubmissionDetails, VisitorInput } from "../domain/types";
 import { CallAttemptService } from "../services/callAttemptService";
 import { ChecklistService } from "../services/checklistService";
 import { ResultService } from "../services/resultService";
@@ -102,6 +102,12 @@ export function createControllers(services: Services) {
         ),
       ),
     submissionChecklist: async (_request: Request, response: Response) =>
-      response.json(services.checklists.submission()),
+      response.json(await services.checklists.submission()),
+    updateSubmissionDetails: async (request: Request, response: Response) =>
+      response.json(
+        await services.checklists.updateSubmissionDetails(
+          request.body as Partial<SubmissionDetails>,
+        ),
+      ),
   };
 }

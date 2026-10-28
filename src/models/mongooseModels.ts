@@ -101,6 +101,15 @@ const acceptanceSchema = new Schema(
   { versionKey: false },
 );
 
+const submissionDetailsSchema = new Schema(
+  {
+    _id: { type: String, required: true },
+    accountEmail: { type: String, default: null },
+    agentName: { type: String, default: null },
+  },
+  { versionKey: false, minimize: false },
+);
+
 function typedModel(name: string, schema: Schema): Model<unknown> {
   const cached = mongoose.models[name] as Model<unknown> | undefined;
   return cached ?? mongoose.model<unknown>(name, schema);
@@ -112,3 +121,4 @@ export const CallResultModel = typedModel("CallResult", resultSchema);
 export const AuditLogModel = typedModel("AuditLog", auditSchema);
 export const ScenarioRunModel = typedModel("ScenarioRun", scenarioRunSchema);
 export const AcceptanceModel = typedModel("AcceptanceItem", acceptanceSchema);
+export const SubmissionDetailsModel = typedModel("SubmissionDetails", submissionDetailsSchema);

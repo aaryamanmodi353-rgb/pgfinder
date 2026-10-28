@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MetadataPreview, MaskedValue, StatusPill } from "@/components/ui/primitives";
 import { SubmissionChecklist } from "@/components/submission-checklist";
+import type { SubmissionItem } from "@/lib/api-types";
 
 describe("console components", () => {
   it("renders status values safely and humanizes labels", () => {
@@ -24,7 +25,7 @@ describe("console components", () => {
     expect(screen.getByText("Metadata mapping is not configured")).toBeInTheDocument();
   });
   it("keeps the submission checklist to the three required items", () => {
-    const items = [
+    const items: SubmissionItem[] = [
       { key: "recordings", label: "Test call recordings", complete: false },
       { key: "account_email", label: "CallKaro account email", complete: false },
       { key: "agent_name", label: "Exact agent name created on CallKaro", complete: false },
@@ -33,5 +34,37 @@ describe("console components", () => {
     expect(screen.getAllByText("Needed")).toHaveLength(3);
     expect(screen.getByText("Test call recordings")).toBeInTheDocument();
     expect(screen.queryByText(/transcript/i)).not.toBeInTheDocument();
+  });
+
+  it("shows editable CallKaro submission fields and recording references", () => {
+    render(
+      <SubmissionChecklist
+        items={[
+          {
+            key: "recordings",
+            label: "Test call recordings",
+            complete: true,
+            recordings: [
+              {
+                attemptId: "attempt-1",
+                recordingFilename: "call-test.mp3",
+                recordingUrl: "https://example.invalid/call-test.mp3",
+                createdAt: "2026-10-28T00:00:00.000Z",
+              },
+            ],
+          },
+          { key: "account_email", label: "CallKaro account email", complete: false, value: null },
+          { key: "agent_name", label: "Exact agent name", complete: false, value: null },
+        ]}
+        onSave={() => undefined}
+      />,
+    );
+    expect(screen.getByText("call-test.mp3")).toBeInTheDocument();
+    expect(screen.getByLabelText("CallKaro account email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Exact agent name")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Manage call recordings" })).toHaveAttribute(
+      "href",
+      "/calls",
+    );
   });
 });

@@ -164,8 +164,28 @@ export const openApiSpec = {
     "/submission-checklist": {
       get: {
         tags: ["Scenarios and QA"],
-        summary: "List exactly the three assignment submission items",
-        responses: { "200": { description: "Three submission items" } },
+        summary: "List exactly the three assignment submission items and their status",
+        responses: { "200": { description: "Three submission items with saved details" } },
+      },
+      patch: {
+        tags: ["Scenarios and QA"],
+        summary: "Save the CallKaro account email or exact agent name",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  accountEmail: { type: "string", format: "email", nullable: true },
+                  agentName: { type: "string", maxLength: 120, nullable: true },
+                },
+                additionalProperties: false,
+              },
+            },
+          },
+        },
+        responses: { "200": { description: "Saved submission details" } },
       },
     },
   },

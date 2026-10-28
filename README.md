@@ -32,7 +32,7 @@ All application endpoints are under `/api/v1`.
 - Results: list/read mapped results and apply call corrections with audit entries.
 - Scenarios: view 14 fixtures and record each review as not run/passed/failed with evidence. These are rehearsal records, not automatic executions.
 - Acceptance checklist: inspect and update implementation acceptance evidence.
-- Submission checklist: exactly three items - recordings, CallKaro account email, and exact agent name.
+- Submission checklist: exactly three items - recording references from call attempts, the CallKaro account email, and the exact agent name. The email and agent name are saved through the API; the recordings item reflects references attached in Calls.
 
 ## CallKaro integration boundary
 

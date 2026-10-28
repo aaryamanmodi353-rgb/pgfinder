@@ -184,6 +184,41 @@ describe("API integration", () => {
       "account_email",
       "agent_name",
     ]);
+    expect(submission.body.every((item: { complete: boolean }) => !item.complete)).toBe(true);
+
+    const savedEmail = await request(app)
+      .patch("/api/v1/submission-checklist")
+      .send({ accountEmail: "aarya@example.com" });
+    expect(savedEmail.status).toBe(200);
+    expect(savedEmail.body.accountEmail).toBe("aarya@example.com");
+    const savedAgent = await request(app)
+      .patch("/api/v1/submission-checklist")
+      .send({ agentName: "PG Finder Test Agent" });
+    expect(savedAgent.body.agentName).toBe("PG Finder Test Agent");
+
+    const attempt = await request(app)
+      .post("/api/v1/call-attempts")
+      .send({ visitorId: seeded.body.visitors[0].id });
+    expect(attempt.status).toBe(201);
+    const recording = await request(app)
+      .patch(`/api/v1/call-attempts/${attempt.body.id}/recording`)
+      .send({
+        recordingFilename: "test-call.mp3",
+        recordingUrl: "https://example.invalid/test-call.mp3",
+      });
+    expect(recording.status).toBe(200);
+
+    const readySubmission = await request(app).get("/api/v1/submission-checklist");
+    expect(readySubmission.body).toHaveLength(3);
+    expect(readySubmission.body.every((item: { complete: boolean }) => item.complete)).toBe(true);
+    expect(readySubmission.body[0].recordings[0].recordingFilename).toBe("test-call.mp3");
+    expect(readySubmission.body[1].value).toBe("aarya@example.com");
+    expect(readySubmission.body[2].value).toBe("PG Finder Test Agent");
+
+    const invalidEmail = await request(app)
+      .patch("/api/v1/submission-checklist")
+      .send({ accountEmail: "not-an-email" });
+    expect(invalidEmail.status).toBe(400);
   });
 
   it("prepares attempts and exposes metadata preview without placeholders", async () => {

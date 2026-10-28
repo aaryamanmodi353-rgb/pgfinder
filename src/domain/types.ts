@@ -188,6 +188,27 @@ export type AcceptanceItem = {
   evidence: string;
 };
 
+export type SubmissionDetails = {
+  accountEmail: string | null;
+  agentName: string | null;
+};
+
+export type SubmissionRecording = {
+  attemptId: string;
+  recordingUrl?: string;
+  recordingFilename?: string;
+  callkaroCallId?: string;
+  createdAt: Date;
+};
+
+export type SubmissionItem = {
+  key: "recordings" | "account_email" | "agent_name";
+  label: string;
+  complete: boolean;
+  value?: string | null;
+  recordings?: SubmissionRecording[];
+};
+
 export type StoredWebhook = { attempt: CallAttempt; duplicate: boolean };
 
 export type MappedWebhook = {

@@ -5,6 +5,7 @@ import {
   CallAttempt,
   CallResult,
   ScenarioRun,
+  SubmissionDetails,
   Visitor,
   VisitorField,
   VisitorInput,
@@ -43,6 +44,7 @@ export class MemoryStore implements DataStore {
   private readonly acceptance = new Map<string, AcceptanceItem>(
     acceptanceDefaults.map((item) => [item.key, copy(item)]),
   );
+  private submissionDetails: SubmissionDetails = { accountEmail: null, agentName: null };
 
   async createVisitor(input: VisitorInput): Promise<Visitor> {
     const created = visitorRecord(randomUUID(), input);
@@ -196,5 +198,16 @@ export class MemoryStore implements DataStore {
     const updated = { ...current, ...copy(patch) };
     this.acceptance.set(key, updated);
     return copy(updated);
+  }
+
+  async getSubmissionDetails(): Promise<SubmissionDetails> {
+    return copy(this.submissionDetails);
+  }
+
+  async updateSubmissionDetails(
+    patch: Partial<SubmissionDetails>,
+  ): Promise<SubmissionDetails> {
+    this.submissionDetails = { ...this.submissionDetails, ...copy(patch) };
+    return copy(this.submissionDetails);
   }
 }

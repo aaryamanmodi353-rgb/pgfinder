@@ -116,8 +116,9 @@ describe("service workflows", () => {
     ).rejects.toThrow(/scenario not found/i);
   });
 
-  it("updates acceptance evidence and keeps the submission checklist to three items", async () => {
-    const service = new ChecklistService(new MemoryStore());
+  it("updates acceptance evidence and tracks exactly three submission items", async () => {
+    const store = new MemoryStore();
+    const service = new ChecklistService(store);
     expect(await service.acceptance()).toHaveLength(7);
     expect(
       await service.updateAcceptance("missing-data", {
@@ -125,7 +126,45 @@ describe("service workflows", () => {
         evidence: "Synthetic metadata check.",
       }),
     ).toMatchObject({ completed: true });
-    expect(service.submission()).toHaveLength(3);
+    const initialSubmission = await service.submission();
+    expect(initialSubmission).toHaveLength(3);
+    expect(initialSubmission.map((item) => item.key)).toEqual([
+      "recordings",
+      "account_email",
+      "agent_name",
+    ]);
+    expect(initialSubmission.every((item) => !item.complete)).toBe(true);
+
+    await service.updateSubmissionDetails({
+      accountEmail: "fde@example.com",
+      agentName: "PG Finder Test Agent",
+    });
+    const attempt = await store.createAttempt({
+      status: "prepared",
+      metadataSent: {},
+      recordingFilename: "callkaro-test-01.mp3",
+    });
+    const updatedSubmission = await service.submission();
+    expect(updatedSubmission).toHaveLength(3);
+    expect(updatedSubmission[0]).toMatchObject({
+      key: "recordings",
+      complete: false,
+      recordings: [{ attemptId: attempt.id, recordingFilename: "callkaro-test-01.mp3" }],
+    });
+    await store.updateAttempt(attempt.id, {
+      recordingUrl: "https://example.invalid/callkaro-test-01.mp3",
+    });
+    expect((await service.submission())[0]?.complete).toBe(true);
+    expect(updatedSubmission[1]).toMatchObject({
+      key: "account_email",
+      complete: true,
+      value: "fde@example.com",
+    });
+    expect(updatedSubmission[2]).toMatchObject({
+      key: "agent_name",
+      complete: true,
+      value: "PG Finder Test Agent",
+    });
     await expect(
       service.updateAcceptance("unknown", { completed: false, evidence: "" }),
     ).rejects.toThrow(/not found/i);

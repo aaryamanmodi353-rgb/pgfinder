@@ -52,3 +52,12 @@ export function useUpdateAcceptance() {
     onSettled: () => qc.invalidateQueries({ queryKey: keys.acceptance }),
   });
 }
+
+export function useUpdateSubmission() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { accountEmail?: string | null; agentName?: string | null }) =>
+      api.updateSubmission(input),
+    onSettled: () => qc.invalidateQueries({ queryKey: keys.submission }),
+  });
+}

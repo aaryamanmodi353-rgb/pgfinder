@@ -79,4 +79,9 @@ export const api = {
   updateAcceptance: (key: string, input: { completed: boolean; evidence: string }) =>
     request<AcceptanceItem>(`/acceptance-checklist/${key}`, json("PATCH", input)),
   submission: () => request<SubmissionItem[]>("/submission-checklist"),
+  updateSubmission: (input: { accountEmail?: string | null; agentName?: string | null }) =>
+    request<{ accountEmail: string | null; agentName: string | null }>(
+      "/submission-checklist",
+      json("PATCH", input),
+    ),
 };

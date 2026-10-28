@@ -1,5 +1,5 @@
 import { NotFoundError } from "../domain/errors";
-import { AcceptanceItem } from "../domain/types";
+import { AcceptanceItem, SubmissionDetails, SubmissionItem } from "../domain/types";
 import { DataStore } from "../repositories/dataStore";
 import { acceptanceDefaults } from "./acceptanceChecklist";
 
@@ -21,11 +21,44 @@ export class ChecklistService {
     return item;
   }
 
-  submission(): Array<{ key: string; label: string; complete: boolean }> {
+  async submission(): Promise<SubmissionItem[]> {
+    const [attempts, details] = await Promise.all([
+      this.store.listAttempts(),
+      this.store.getSubmissionDetails(),
+    ]);
+    const recordings = attempts
+      .filter((attempt) => attempt.recordingUrl || attempt.recordingFilename)
+      .map((attempt) => ({
+        attemptId: attempt.id,
+        ...(attempt.recordingUrl ? { recordingUrl: attempt.recordingUrl } : {}),
+        ...(attempt.recordingFilename ? { recordingFilename: attempt.recordingFilename } : {}),
+        ...(attempt.callkaroCallId ? { callkaroCallId: attempt.callkaroCallId } : {}),
+        createdAt: attempt.createdAt,
+      }));
+
     return [
-      { key: "recordings", label: "Test call recordings", complete: false },
-      { key: "account_email", label: "CallKaro account email", complete: false },
-      { key: "agent_name", label: "Exact agent name created on CallKaro", complete: false },
+      {
+        key: "recordings",
+        label: "Test call recordings",
+        complete: recordings.some((recording) => Boolean(recording.recordingUrl)),
+        recordings,
+      },
+      {
+        key: "account_email",
+        label: "CallKaro account email",
+        complete: Boolean(details.accountEmail),
+        value: details.accountEmail,
+      },
+      {
+        key: "agent_name",
+        label: "Exact agent name created on CallKaro",
+        complete: Boolean(details.agentName),
+        value: details.agentName,
+      },
     ];
+  }
+
+  updateSubmissionDetails(patch: Partial<SubmissionDetails>): Promise<SubmissionDetails> {
+    return this.store.updateSubmissionDetails(patch);
   }
 }

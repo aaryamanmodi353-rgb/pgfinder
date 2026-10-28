@@ -4,6 +4,7 @@ import {
   CallAttempt,
   CallResult,
   ScenarioRun,
+  SubmissionDetails,
   Visitor,
   VisitorInput,
 } from "../domain/types";
@@ -49,4 +50,6 @@ export interface DataStore {
     key: string,
     patch: Pick<AcceptanceItem, "completed" | "evidence">,
   ): Promise<AcceptanceItem | undefined>;
+  getSubmissionDetails(): Promise<SubmissionDetails>;
+  updateSubmissionDetails(patch: Partial<SubmissionDetails>): Promise<SubmissionDetails>;
 }

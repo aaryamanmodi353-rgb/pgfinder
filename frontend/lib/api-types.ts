@@ -68,5 +68,18 @@ export type AcceptanceItem = {
   completed: boolean;
   evidence: string;
 };
-export type SubmissionItem = { key: string; label: string; complete: boolean };
+export type SubmissionRecording = {
+  attemptId: string;
+  recordingUrl?: string;
+  recordingFilename?: string;
+  callkaroCallId?: string;
+  createdAt: string;
+};
+export type SubmissionItem = {
+  key: "recordings" | "account_email" | "agent_name";
+  label: string;
+  complete: boolean;
+  value?: string | null;
+  recordings?: SubmissionRecording[];
+};
 export type MetadataPreview = { payload: Record<string, unknown>; missingFields: string[] };

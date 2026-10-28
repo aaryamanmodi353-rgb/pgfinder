@@ -61,6 +61,13 @@ const acceptanceBody = z
     evidence: z.string().trim().max(1000).default(""),
   })
   .strict();
+const submissionDetailsBody = z
+  .object({
+    accountEmail: z.string().trim().email().max(254).nullable().optional(),
+    agentName: z.string().trim().min(1).max(120).nullable().optional(),
+  })
+  .strict()
+  .refine((value) => Object.keys(value).length > 0, "Provide at least one submission detail.");
 
 export function createApiRouter(options: {
   store: DataStore;
@@ -141,6 +148,11 @@ export function createApiRouter(options: {
     asyncHandler(controllers.updateAcceptance),
   );
   router.get("/submission-checklist", asyncHandler(controllers.submissionChecklist));
+  router.patch(
+    "/submission-checklist",
+    validateBody(submissionDetailsBody),
+    asyncHandler(controllers.updateSubmissionDetails),
+  );
 
   router.use((_request, _response, next) =>
     next(new AppError("Route not found.", 404, "NOT_FOUND")),

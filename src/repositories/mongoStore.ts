@@ -6,6 +6,7 @@ import {
   CallAttempt,
   CallResult,
   ScenarioRun,
+  SubmissionDetails,
   Visitor,
   VisitorField,
   VisitorInput,
@@ -18,6 +19,7 @@ import {
   CallAttemptModel,
   CallResultModel,
   ScenarioRunModel,
+  SubmissionDetailsModel,
   VisitorModel,
 } from "../models/mongooseModels";
 import { DataStore, NewAuditLog, NewCallAttempt, NewCallResult } from "./dataStore";
@@ -269,5 +271,30 @@ export class MongoStore implements DataStore {
     await this.listAcceptanceItems();
     const doc = await AcceptanceModel.findByIdAndUpdate(key, { $set: patch }, { new: true }).exec();
     return doc ? acceptanceOf(doc) : undefined;
+  }
+
+  async getSubmissionDetails(): Promise<SubmissionDetails> {
+    const doc = await SubmissionDetailsModel.findById("assignment").exec();
+    if (!doc) return { accountEmail: null, agentName: null };
+    const row = rowOf(doc);
+    return {
+      accountEmail: typeof row.accountEmail === "string" ? row.accountEmail : null,
+      agentName: typeof row.agentName === "string" ? row.agentName : null,
+    };
+  }
+
+  async updateSubmissionDetails(
+    patch: Partial<SubmissionDetails>,
+  ): Promise<SubmissionDetails> {
+    const doc = await SubmissionDetailsModel.findByIdAndUpdate(
+      "assignment",
+      { $set: patch, $setOnInsert: { _id: "assignment" } },
+      { upsert: true, new: true, setDefaultsOnInsert: true },
+    ).exec();
+    const row = rowOf(doc);
+    return {
+      accountEmail: typeof row.accountEmail === "string" ? row.accountEmail : null,
+      agentName: typeof row.agentName === "string" ? row.agentName : null,
+    };
   }
 }
