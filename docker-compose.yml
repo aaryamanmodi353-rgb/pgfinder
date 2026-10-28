@@ -1,0 +1,27 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      LOG_LEVEL: info
+      MONGO_URI: mongodb://mongo:27017/pgfinder
+      CORS_ORIGINS: http://localhost:3000
+      CALLKARO_WEBHOOK_SECRET: ${CALLKARO_WEBHOOK_SECRET:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - pgfinder-mongo:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  pgfinder-mongo:

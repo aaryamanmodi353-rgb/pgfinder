@@ -1,0 +1,11 @@
+{
+  "envelopeKey": null,
+  "variables": {
+    "name": null,
+    "phone": null,
+    "city": null,
+    "gender": null,
+    "budget": null,
+    "budgetIsApproximate": null
+  }
+}
