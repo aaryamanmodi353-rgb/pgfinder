@@ -2,6 +2,22 @@ import { AcceptanceItem } from "../domain/types";
 
 export const acceptanceDefaults: AcceptanceItem[] = [
   {
+    key: "call-flow",
+    title: "Call flow is clear",
+    description:
+      "The agent introduces itself, confirms the purpose, and gathers qualification details in a sensible order.",
+    completed: false,
+    evidence: "",
+  },
+  {
+    key: "natural-conversation",
+    title: "Conversation feels natural",
+    description:
+      "The agent listens, handles language preference, and avoids sounding like a rigid form.",
+    completed: false,
+    evidence: "",
+  },
+  {
     key: "missing-data",
     title: "Missing data is safe",
     description: "Missing values are normalized and omitted from metadata.",

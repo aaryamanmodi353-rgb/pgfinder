@@ -21,7 +21,11 @@ export class ScenarioService {
 
   async markRun(
     scenarioId: string,
-    input: { result: "passed" | "failed"; evidenceNote: string; recordingReviewed: boolean },
+    input: {
+      result: "not_run" | "passed" | "failed";
+      evidenceNote: string;
+      recordingReviewed: boolean;
+    },
   ): Promise<ScenarioRun> {
     if (!scenarioFixtures.some((fixture) => fixture.id === scenarioId))
       throw new NotFoundError("Scenario not found.");

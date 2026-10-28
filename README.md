@@ -1,6 +1,6 @@
-# PG Finder Ops Console API
+# PG Finder Ops Console
 
-A synthetic-data companion API for the CallKaro AI FDE assignment. It models PG Finder visitors, prepares null-safe metadata, records test-call attempts, accepts post-call webhooks, and tracks scenario evidence. It does not place live calls.
+A synthetic-data companion workspace for the CallKaro AI FDE assignment. It includes a Next.js operations console and an Express API for PG Finder visitor context, metadata previews, call evidence, webhook results, and scenario readiness. It does not place live calls.
 
 ## Run locally
 
@@ -9,16 +9,18 @@ Requires Node.js 20 or newer. The default run uses in-memory storage and needs n
 ```sh
 cp .env.example .env
 npm install
-npm run dev
+npm run dev:all
 ```
 
-The API listens on `http://localhost:3000`. Visit `/api/docs` for the OpenAPI UI and `/api/v1/health` for a health check. Data is reset when the in-memory process restarts.
+The console listens on `http://localhost:3001`. The API listens on `http://localhost:3000`; visit `/api/docs` for the OpenAPI UI and `/api/v1/health` for a health check. Next.js proxies `/api/v1` requests to the API, so local browser requests need no separate API key or CORS setup. Data is reset when the in-memory process restarts.
 
-For persistent storage, set `MONGO_URI` in `.env` to a MongoDB connection string. Docker Compose starts the API with MongoDB:
+For persistent storage, set `MONGO_URI` in `.env` to a MongoDB connection string. Docker Compose starts the console, API, and MongoDB:
 
 ```sh
 docker compose up --build
 ```
+
+Open `http://localhost:3001` for the console or `http://localhost:3000/api/docs` for the API docs. To run one process, use `npm run dev` for the API or `npm run dev:web` for the frontend.
 
 ## API outline
 
@@ -28,7 +30,7 @@ All application endpoints are under `/api/v1`.
 - Call attempts: prepare an attempt from a visitor, list/read attempts, and attach a recording URL or filename with notes.
 - Webhook: persist the untouched JSON payload, then map it only when a verified mapping is configured.
 - Results: list/read mapped results and apply call corrections with audit entries.
-- Scenarios: view 14 fixtures and mark each run passed/failed with evidence.
+- Scenarios: view 14 fixtures and record each review as not run/passed/failed with evidence. These are rehearsal records, not automatic executions.
 - Acceptance checklist: inspect and update implementation acceptance evidence.
 - Submission checklist: exactly three items - recordings, CallKaro account email, and exact agent name.
 
@@ -43,12 +45,12 @@ The available assignment material does not specify CallKaro's metadata envelope,
 
 ## Implemented / Deferred
 
-| Implemented                                                                                                                              | Deferred                                                                               |
-| ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Synthetic visitor fixtures, missing-value normalization, metadata preview, scenarios, run evidence, acceptance and submission checklists | Live outbound calls and any phone-number dialing integration                           |
-| In-memory demo store and Mongoose-backed MongoDB store                                                                                   | Actual CallKaro webhook mapping until provider field paths are verified and configured |
-| Raw webhook persistence, payload-hash idempotency, result validation, correction audit trail                                             | CallKaro signature verification until an official signature scheme is documented       |
-| Request IDs, Pino logging, request rate limits, Helmet, CORS allow-list, consistent errors, OpenAPI UI                                   | Frontend (to be designed from the separate frontend prompt)                            |
+| Implemented                                                                                                                                  | Deferred                                                                               |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Synthetic visitor fixtures, null-safe metadata previews, scenario evidence, readiness and submission screens                                 | Live outbound calls and any phone-number dialing integration                           |
+| In-memory demo store and Mongoose-backed MongoDB store                                                                                       | Actual CallKaro webhook mapping until provider field paths are verified and configured |
+| Raw webhook persistence, payload-hash idempotency, result validation, correction audit trail                                                 | CallKaro signature verification until an official signature scheme is documented       |
+| Responsive Next.js console, masked phone review, local theme preference, API proxy, request IDs, logging, rate limits, Helmet, CORS, OpenAPI | Provider-specific payload configuration until verified from official documentation     |
 
 ## Assumptions to verify against docs.callkaro.ai
 
@@ -62,13 +64,24 @@ The available assignment material does not specify CallKaro's metadata envelope,
 
 ```sh
 npm test
+npm run test:frontend
+npm run test:e2e
+npm run typecheck:web
 npm run coverage
 npm run build
 npm run lint
 npm run format:check
 ```
 
-The Vitest suite covers normalization, metadata construction, the outcome classifier, the configurable adapter, webhook behavior, and the correction/audit flow. The coverage command enforces at least 85% lines, functions, and statements for service files (and 80% branches).
+The suites cover backend workflows, key frontend components, and a Playwright browser smoke path. The coverage command enforces at least 85% lines, functions, and statements for service files (and 80% branches).
+
+## Accessibility and responsive review
+
+- Navigation landmarks and form controls have accessible names; keyboard focus is visible.
+- Dialogs use Radix focus management, and reduced-motion preferences are respected.
+- Phone values stay masked until the reviewer chooses to reveal them.
+- Tables scroll horizontally on narrow screens, and the primary navigation changes to a bottom bar on mobile.
+- Theme choice is stored locally and respects the operating-system preference on first visit.
 
 ## Safety and data handling
 

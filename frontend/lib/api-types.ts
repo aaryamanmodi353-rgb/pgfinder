@@ -1,0 +1,72 @@
+export type Visitor = {
+  id: string;
+  name?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  gender?: string | null;
+  budget?: { amount: number; isApproximate: boolean } | null;
+  createdAt: string;
+  source: "synthetic";
+  missingFields: Array<"name" | "phone" | "city" | "gender" | "budget">;
+};
+export type CallAttempt = {
+  id: string;
+  visitorId?: string;
+  scenarioId?: string;
+  status: "prepared" | "awaiting_result" | "received" | "received_unmapped" | "reviewed";
+  metadataSent: Record<string, unknown>;
+  callkaroCallId?: string;
+  recordingUrl?: string;
+  recordingFilename?: string;
+  recordingNotes?: string;
+  rawPayload?: unknown;
+  mappingError?: string;
+  createdAt: string;
+};
+export type CallResult = {
+  id: string;
+  attemptId: string;
+  visitorId?: string;
+  customerName: { value: string | null; status: string };
+  contactPhone: { value: string | null; status: string };
+  preferredCity: { value: string | null; status: string };
+  genderPreference: { value: string | null; status: string };
+  monthlyBudgetInr: { amount: number | null; isApproximate: boolean; status: string };
+  moveInDate: { isoDate: string | null; statedText: string | null; status: string };
+  stayDuration: { months: number | null; statedText: string | null; status: string };
+  callOutcome: string;
+  callbackRequestedTime?: string | null;
+  callbackScheduled: false;
+  missingInformation: string[];
+  callSummary: string;
+  nextAction: string;
+  languageUsed: string;
+  reasons: string[];
+  createdAt: string;
+};
+export type Scenario = {
+  id: string;
+  title: string;
+  metadata: Record<string, unknown>;
+  callerBehavior: string;
+  expectedExtractedFields: Record<string, unknown>;
+  expectedOutcome: string;
+  requirement: string;
+  run: {
+    id?: string;
+    scenarioId: string;
+    result: "not_run" | "passed" | "failed";
+    evidenceNote: string;
+    recordingReviewed: boolean;
+    updatedAt?: string;
+  };
+};
+export type AcceptanceItem = {
+  key: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  evidence: string;
+};
+export type SubmissionItem = { key: string; label: string; complete: boolean };
+export type MetadataPreview = { payload: Record<string, unknown>; missingFields: string[] };

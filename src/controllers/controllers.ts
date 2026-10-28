@@ -83,7 +83,7 @@ export function createControllers(services: Services) {
         await services.scenarios.markRun(
           pathValue(request, "id"),
           request.body as {
-            result: "passed" | "failed";
+            result: "not_run" | "passed" | "failed";
             evidenceNote: string;
             recordingReviewed: boolean;
           },

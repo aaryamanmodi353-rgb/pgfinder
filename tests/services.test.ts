@@ -118,7 +118,7 @@ describe("service workflows", () => {
 
   it("updates acceptance evidence and keeps the submission checklist to three items", async () => {
     const service = new ChecklistService(new MemoryStore());
-    expect(await service.acceptance()).toHaveLength(5);
+    expect(await service.acceptance()).toHaveLength(7);
     expect(
       await service.updateAcceptance("missing-data", {
         completed: true,

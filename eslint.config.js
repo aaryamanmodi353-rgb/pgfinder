@@ -11,10 +11,10 @@ module.exports = [
     },
   },
   {
-    files: ["**/*.ts"],
+    files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: tsParser,
-      parserOptions: { ecmaVersion: "latest", sourceType: "module" },
+      parserOptions: { ecmaVersion: "latest", sourceType: "module", ecmaFeatures: { jsx: true } },
       globals: {
         process: "readonly",
         Buffer: "readonly",
@@ -30,5 +30,20 @@ module.exports = [
       "@typescript-eslint/no-explicit-any": "error",
     },
   },
-  { ignores: ["dist/**", "node_modules/**", "coverage/**"] },
+  {
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      "coverage/**",
+      ".next/**",
+      "test-results/**",
+      "playwright-report/**",
+      "*.tsbuildinfo",
+      "next-env.d.ts",
+    ],
+  },
+  {
+    files: ["next.config.mjs"],
+    languageOptions: { globals: { process: "readonly" } },
+  },
 ];

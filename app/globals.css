@@ -1,0 +1,61 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/fraunces";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --canvas: 36 38% 97%;
+  --surface: 0 0% 100%;
+  --ink: 18 22% 15%;
+  --muted: 20 9% 45%;
+  --line: 28 17% 88%;
+  --brand: 346 48% 25%;
+  --sand: 35 58% 91%;
+  --sage: 151 23% 91%;
+  --amber: 36 77% 90%;
+  --brick: 8 54% 93%;
+}
+.dark {
+  color-scheme: dark;
+  --canvas: 20 16% 10%;
+  --surface: 20 15% 14%;
+  --ink: 34 24% 93%;
+  --muted: 28 10% 67%;
+  --line: 20 10% 25%;
+  --brand: 346 43% 68%;
+  --sand: 29 20% 24%;
+  --sage: 151 16% 24%;
+  --amber: 36 25% 25%;
+  --brick: 8 25% 26%;
+}
+* {
+  border-color: hsl(var(--line));
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  background: hsl(var(--canvas));
+  color: hsl(var(--ink));
+  font-family: "Inter Variable", Inter, sans-serif;
+  font-feature-settings: "ss01" on;
+}
+::selection {
+  background: hsl(var(--brand) / 0.16);
+}
+:focus-visible {
+  outline: 2px solid hsl(var(--brand));
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

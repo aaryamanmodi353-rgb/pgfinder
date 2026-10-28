@@ -50,7 +50,7 @@ const recordingBody = z
   );
 const scenarioRunBody = z
   .object({
-    result: z.enum(["passed", "failed"]),
+    result: z.enum(["not_run", "passed", "failed"]),
     evidenceNote: z.string().trim().max(1000).default(""),
     recordingReviewed: z.boolean().default(false),
   })

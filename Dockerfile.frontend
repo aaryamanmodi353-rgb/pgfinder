@@ -1,0 +1,21 @@
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY app ./app
+COPY frontend ./frontend
+COPY next.config.mjs postcss.config.mjs tailwind.config.ts tsconfig.frontend.json next-env.d.ts ./
+RUN npm run build:web
+
+FROM node:20-alpine AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/app ./app
+COPY --from=build /app/frontend ./frontend
+COPY --from=build /app/next.config.mjs ./next.config.mjs
+EXPOSE 3000
+USER node
+CMD ["./node_modules/.bin/next", "start", "-p", "3000"]
